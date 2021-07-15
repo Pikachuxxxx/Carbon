@@ -5,7 +5,8 @@
 #include "utils/Exception.h"
 
 #define NOICE_NUMBER 69
-#define WND_EXCEPT(hr) WindowsWindow::WindowsWindowException(__LINE__, __FILE__, hr)
+#define EXCEPT(hr) WindowsWindow::WindowsWindowException(__LINE__, __FILE__, hr)
+#define LAST_EXCEPT() WindowsWindow::WindowsWindowException(__LINE__, __FILE__, GetLastError())
 
 // TODO: Don't close all instances of the window if we close one of them
 class WindowsWindow
@@ -29,14 +30,15 @@ private:
 	class WindowClass
 	{
 	public:
-		static const char* GetClassName() noexcept;
+		static const char* GetName() noexcept;
 		static HINSTANCE GetInstance() noexcept;
 	private:
 		WindowClass() noexcept;
 		~WindowClass();
 
-		static constexpr const char* wndClassName = "Direct3D Renderer Window";
+		// Singleton instance
 		static WindowClass wndClass;
+		static constexpr const char* wndClassName = "Direct3D Renderer Window";
 		HINSTANCE hInst;
 	};
 public:

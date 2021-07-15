@@ -1,7 +1,7 @@
 #include "WindowsWindow.h"
 
 #include "utils/WindowsMessageMap.h"
-
+#include "../resource.h"
 #include <sstream>
 
 // Window Class Construction for the static singleton variable
@@ -15,14 +15,21 @@ WindowsWindow::WindowsWindow(const char* title, uint32_t width, uint32_t height,
     wr.right = width + wr.left;
     wr.top = 100;
     wr.bottom = height + wr.top;
-    AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+    if (FAILED(AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)))
+    {
+        throw LAST_EXCEPT();
+    }
     // Create Window Instance & get hWnd
     hWnd = CreateWindow(
-        WindowClass::GetClassName(), title,
+        WindowClass::GetName(), title,
         WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
         xPos, yPos, wr.right - wr.left, wr.bottom - wr.top,
         nullptr, nullptr, WindowClass::GetInstance(), this
     );
+    if (hWnd == nullptr)
+    {
+        throw LAST_EXCEPT();
+    }
     // newly created windows start off as hidden
     ShowWindow(hWnd, SW_SHOW);
 }
@@ -90,16 +97,17 @@ WindowsWindow::WindowClass::WindowClass() noexcept : hInst(GetModuleHandle(nullp
     // Register the Window Class using a configuration struct
     WNDCLASSEX windowClass = { 0 };
     windowClass.cbSize = sizeof(windowClass);
-	windowClass.style = CS_OWNDC;				    // Creates multiple windows with it's own device context (CS = class style, OWN DC =  own device context)
-	windowClass.lpfnWndProc = HandleMsgSetup;	    // The window procedure to handle the messages
-	windowClass.cbClsExtra = 0;					    // No extra used defines data for the custom data for current window class registered
-	windowClass.cbWndExtra = 0;					    // Same as above but it's the data for every instance of this class 
-	windowClass.hInstance = GetInstance();		    // The instance handler for the current window 
-	windowClass.hIcon = nullptr;				    // No Icon 
-	windowClass.hCursor = nullptr;				    // Using the default cursor
-	windowClass.hbrBackground = nullptr;		    // We take care of this through DirectX, We don't specify how to clear the backgorund we leave it empty to be taken care by DirectX
-	windowClass.lpszMenuName = nullptr;			    // Not using any menus
-    windowClass.lpszClassName = GetClassName();		// The name to identify this class handle
+    windowClass.style = CS_OWNDC;				    // Creates multiple windows with it's own device context (CS = class style, OWN DC =  own device context)
+    windowClass.lpfnWndProc = HandleMsgSetup;	    // The window procedure to handle the messages
+    windowClass.cbClsExtra = 0;					    // No extra used defines data for the custom data for current window class registered
+    windowClass.cbWndExtra = 0;					    // Same as above but it's the data for every instance of this class 
+    windowClass.hInstance = GetInstance();		    // The instance handler for the current window 
+    windowClass.hIcon = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 64, 64, 0));				    // Icon 
+    windowClass.hCursor = nullptr;				    // Using the default cursor
+    windowClass.hbrBackground = nullptr;		    // We take care of this through DirectX, We don't specify how to clear the background we leave it empty to be taken care by DirectX
+    windowClass.lpszMenuName = nullptr;			    // Not using any menus
+    windowClass.lpszClassName = GetName();		    // The name to identify this class handle
+    windowClass.hIconSm = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 64, 64, 0));;
     RegisterClassEx(&windowClass);
 }
 
@@ -108,7 +116,7 @@ WindowsWindow::WindowClass::~WindowClass()
     UnregisterClass(wndClassName, GetInstance());
 }
 
-const char* WindowsWindow::WindowClass::GetClassName() noexcept
+const char* WindowsWindow::WindowClass::GetName() noexcept
 {
     return wndClassName;
 }
@@ -129,7 +137,7 @@ const char* WindowsWindow::WindowsWindowException::what() const noexcept
 {
     std::ostringstream oss;
     oss << GetType() << std::endl
-		<< "[Error Code] " << GetErrorCode() << std::endl
+        << "[Error Code] " << GetErrorCode() << std::endl
         << "[Description] " << GetErrorString() << std::endl
         << GetOriginString();
     whatBufffer = oss.str();
