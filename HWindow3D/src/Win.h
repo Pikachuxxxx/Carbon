@@ -1,7 +1,7 @@
 #pragma once
 
 // target Windows 7 or later
-#define _WIN32_WINNT 0x0601
+//#define _WIN32_WINNT 0x0601
 #include <sdkddkver.h>
 /*
  * The following #defines disable a bunch of unused windows stuff. If you 
@@ -47,7 +47,12 @@
 // Does not cause errors when trying to use std::min/std::max
 #define NOMINMAX
 
-#define STRICT
+//#define STRICT
 
 // The magical Windows API header
 #include <Windows.h>
+
+// Make the Class/Struct Object Non-Copyable/Assignable
+#define NONCOPYABLE(type_identifier)                                \
+    type_identifier(const type_identifier&) = delete;               \
+    type_identifier& operator=(const type_identifier&) = delete;

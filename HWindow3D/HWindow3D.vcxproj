@@ -151,11 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\utils\Exception.cpp" />
+    <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="src\utils\WindowsMessageMap.cpp" />
     <ClCompile Include="src\WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\utils\Exception.h" />
     <ClInclude Include="src\utils\WindowsMessageMap.h" />
     <ClInclude Include="src\Win.h" />
     <ClInclude Include="src\WindowsWindow.h" />
