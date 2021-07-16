@@ -21,6 +21,9 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
+            if (wnd.keyBoard.KeyIsPressed(VK_SPACE))
+                MessageBox(nullptr, "Fuck you!", "Space was pressed!", MB_OK);
         }
 
         if (gResult == -1)

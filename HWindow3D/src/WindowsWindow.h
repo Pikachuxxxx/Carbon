@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "utils/Exception.h"
+#include "Keyboard.h"
 
 #define NOICE_NUMBER 69
 #define EXCEPT(hr) WindowsWindow::WindowsWindowException(__LINE__, __FILE__, hr)
@@ -11,6 +12,7 @@
 // TODO: Don't close all instances of the window if we close one of them
 class WindowsWindow
 {
+	// Internal Type declaration first
 public:
 	// TODO: Store the return code and return it at the end of the program
 	class WindowsWindowException : public Exception
@@ -44,6 +46,8 @@ private:
 public:
     WindowsWindow(const char* title, uint32_t width, uint32_t height, int32_t x, int32_t y);
     ~WindowsWindow();
+public:
+	Keyboard keyBoard;
 private:
     int width;
     int height;

@@ -158,8 +158,8 @@
     <ClCompile Include="src\WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Keyboard.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="src\Keyboard.h" />
     <ClInclude Include="src\utils\Exception.h" />
     <ClInclude Include="src\utils\WindowsMessageMap.h" />
     <ClInclude Include="src\Win.h" />

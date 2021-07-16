@@ -78,12 +78,22 @@ LRESULT WindowsWindow::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
     case WM_CLOSE:
         PostQuitMessage(NOICE_NUMBER);
         break;
+    // Clear keystate when the focus is lost to prevent zombie keys
+    case WM_KILLFOCUS:
+        keyBoard.ClearState();
+        break;
     case WM_KEYDOWN:
-        if (wParam == 'F')
+        if (!(lParam & 0x40000000) || keyBoard.AutoRepeadIsEnabled())
         {
-            SetWindowText(hWnd, "Respects!");
-            break;
+            keyBoard.OnKeyPressed(static_cast<unsigned char>(wParam));
         }
+		break;
+    case WM_KEYUP:
+        keyBoard.OnKeyReleased(static_cast<unsigned char>(wParam));
+        break;
+    case WM_CHAR:
+        keyBoard.OnChar(static_cast<unsigned char>(wParam));
+        break;
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
