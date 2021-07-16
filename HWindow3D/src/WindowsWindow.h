@@ -4,6 +4,7 @@
 
 #include "utils/Exception.h"
 #include "Keyboard.h"
+#include "Mouse.h"
 
 #define NOICE_NUMBER 69
 #define EXCEPT(hr) WindowsWindow::WindowsWindowException(__LINE__, __FILE__, hr)
@@ -46,8 +47,11 @@ private:
 public:
     WindowsWindow(const char* title, uint32_t width, uint32_t height, int32_t x, int32_t y);
     ~WindowsWindow();
+
+	void SetTitle(const std::string& title);
 public:
 	Keyboard keyBoard;
+	Mouse mouse;
 private:
     int width;
     int height;

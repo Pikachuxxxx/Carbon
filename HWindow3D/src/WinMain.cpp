@@ -24,6 +24,20 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
             if (wnd.keyBoard.KeyIsPressed(VK_SPACE))
                 MessageBox(nullptr, "Fuck you!", "Space was pressed!", MB_OK);
+
+            while (!wnd.mouse.IsEmpty())
+            {
+                const auto e = wnd.mouse.Read();
+                switch (e.GetType())
+                {
+                case Mouse::Event::Type::Leave:
+                    wnd.SetTitle("Mouse left!");
+                    break;
+                case Mouse::Event::Type::WheelUp:
+                    wnd.SetTitle(std::to_string(wnd.mouse.GetPosX()) + " Wheel delta : " + std::to_string(wnd.mouse.GetWheelDelta()));
+                    break;
+                }
+            }
         }
 
         if (gResult == -1)
