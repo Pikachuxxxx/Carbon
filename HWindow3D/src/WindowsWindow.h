@@ -4,7 +4,7 @@
 #include <optional>
 #include <memory>
 
-#include "utils/Exception.h"
+#include "utils/CarbonException.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
@@ -19,7 +19,7 @@ class WindowsWindow
 	// Internal Type declaration first
 public:
 	// TODO: Store the return code and return it at the end of the program
-	class WindowsWindowException : public Exception
+	class WindowsWindowException : public CarbonException
 	{
 	public:
 		WindowsWindowException(int line, const char* file, HRESULT hr) noexcept;
@@ -54,7 +54,13 @@ public:
 
 	void SetTitle(const std::string& title);
 	static std::optional<int> ProcessMessages();
-	inline Graphics& Gfx() { return *gfx; }
+	inline Graphics& Gfx() {
+		if (!gfx)
+		{
+			throw CBN_NO_GFX_EXCEPT();
+		}
+		return *gfx;
+	}
 public:
 	Keyboard keyBoard;
 	Mouse mouse;

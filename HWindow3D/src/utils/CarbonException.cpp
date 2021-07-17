@@ -1,11 +1,11 @@
-#include "Exception.h"
+#include "CarbonException.h"
 #include <sstream>
 
-Exception::Exception(int line, const char* file)
+CarbonException::CarbonException(int line, const char* file)
 	: m_Line(line), m_File(file)
 {}
 
-const char* Exception::what() const noexcept
+const char* CarbonException::what() const noexcept
 {
 	std::ostringstream oss;
 	oss << GetType() << std::endl
@@ -14,22 +14,22 @@ const char* Exception::what() const noexcept
 	return whatBufffer.c_str();
 }
 
-const char* Exception::GetType() const noexcept
+const char* CarbonException::GetType() const noexcept
 {
 	return "Exception";
 }
 
-int Exception::GetLine() const noexcept
+int CarbonException::GetLine() const noexcept
 {
 	return m_Line;
 }
 
-const std::string& Exception::GetFile() const noexcept
+const std::string& CarbonException::GetFile() const noexcept
 {
 	return m_File;
 }
 
-std::string Exception::GetOriginString() const noexcept
+std::string CarbonException::GetOriginString() const noexcept
 {
 	std::ostringstream oss;
 	oss << "[File] " << m_File << std::endl

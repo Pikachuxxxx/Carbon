@@ -221,7 +221,7 @@ HINSTANCE WindowsWindow::WindowClass::GetInstance() noexcept
  *				    WindowsWindow::WindowsWindowException               *
 *************************************************************************/
 WindowsWindow::WindowsWindowException::WindowsWindowException(int line, const char* file, HRESULT hr) noexcept
-    : Exception(line, file), m_HR(hr)
+    : CarbonException(line, file), m_HR(hr)
 {}
 
 const char* WindowsWindow::WindowsWindowException::what() const noexcept

@@ -12,12 +12,12 @@
  */
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
-    App application("Dick lazerzzz!", 800, 600, 200, 200);
     try 
     {
+        App application("Dick lazerzzz!", 800, 600, 200, 200);
         application.Run();
     }
-    catch (const Exception& e)
+    catch (const CarbonException& e)
     {
         MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
     }

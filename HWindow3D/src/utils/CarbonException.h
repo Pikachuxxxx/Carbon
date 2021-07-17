@@ -3,10 +3,10 @@
 #include <exception>
 #include <string>
 
-class Exception : public std::exception
+class CarbonException : public std::exception
 {
 public:
-	Exception(int line, const char* file);
+	CarbonException(int line, const char* file);
 	const char* what() const noexcept override;
 	virtual const char* GetType() const noexcept;
 	int GetLine() const noexcept;
