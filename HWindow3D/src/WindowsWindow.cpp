@@ -32,6 +32,8 @@ WindowsWindow::WindowsWindow(const char* title, uint32_t width, uint32_t height,
     }
     // newly created windows start off as hidden
     ShowWindow(hWnd, SW_SHOW);
+    // Create the Graphics context
+    gfx = std::make_unique<Graphics>(hWnd);
 }
 
 WindowsWindow::~WindowsWindow()
@@ -45,6 +47,20 @@ void WindowsWindow::SetTitle(const std::string& title)
     {
         throw LAST_EXCEPT();
     }
+}
+
+std::optional<int> WindowsWindow::ProcessMessages()
+{
+    MSG msg;
+    while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+    {
+        if (msg.message == WM_QUIT)
+            return (int)msg.wParam;
+
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    return {};
 }
 
 LRESULT CALLBACK WindowsWindow::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept

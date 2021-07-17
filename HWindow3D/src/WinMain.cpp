@@ -1,5 +1,6 @@
 #include "utils/WindowsMessageMap.h"
 #include "WindowsWindow.h"
+#include "App.h"
 
 /**
  * The Windows subsystem Main method - WinMain
@@ -11,39 +12,10 @@
  */
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
-    try {
-        // Create the Win32 Window Instance
-        WindowsWindow wnd("LOLOLOLOLOLLLL!!!", 800, 600, 400, 200);
-
-        MSG msg;
-        BOOL gResult;
-        while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-
-            if (wnd.keyBoard.KeyIsPressed(VK_SPACE))
-                MessageBox(nullptr, "Fuck you!", "Space was pressed!", MB_OK);
-
-            while (!wnd.mouse.IsEmpty())
-            {
-                const auto e = wnd.mouse.Read();
-                switch (e.GetType())
-                {
-                case Mouse::Event::Type::Leave:
-                    wnd.SetTitle("Mouse left!");
-                    break;
-                case Mouse::Event::Type::WheelUp:
-                    wnd.SetTitle(std::to_string(wnd.mouse.GetPosX()) + " Wheel delta : " + std::to_string(wnd.mouse.GetWheelDelta()));
-                    break;
-                }
-            }
-        }
-
-        if (gResult == -1)
-            return -1;
-        else
-            return int(msg.wParam);
+    App application("Dick lazerzzz!", 800, 600, 200, 200);
+    try 
+    {
+        application.Run();
     }
     catch (const Exception& e)
     {

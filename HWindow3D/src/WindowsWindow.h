@@ -1,10 +1,13 @@
 #pragma once
 #include "Win.h"
 #include <stdint.h>
+#include <optional>
+#include <memory>
 
 #include "utils/Exception.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Graphics.h"
 
 #define NOICE_NUMBER 69
 #define EXCEPT(hr) WindowsWindow::WindowsWindowException(__LINE__, __FILE__, hr)
@@ -47,8 +50,11 @@ private:
 public:
     WindowsWindow(const char* title, uint32_t width, uint32_t height, int32_t x, int32_t y);
     ~WindowsWindow();
+	NONCOPYABLE(WindowsWindow)
 
 	void SetTitle(const std::string& title);
+	static std::optional<int> ProcessMessages();
+	inline Graphics& Gfx() { return *gfx; }
 public:
 	Keyboard keyBoard;
 	Mouse mouse;
@@ -57,7 +63,7 @@ private:
     int height;
     int32_t xPos, yPos;
     HWND hWnd;
-	NONCOPYABLE(WindowsWindow)
+	std::unique_ptr<Graphics> gfx;
 private:
     static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
     static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
