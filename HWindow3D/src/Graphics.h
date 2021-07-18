@@ -7,6 +7,8 @@
 #include <vector>
 #include "utils/CarbonException.h"
 #include "DxgiInfoManager.h"
+#include "Timer.h"
+
 
 #include "ExceptionMacros.h"
 
@@ -63,6 +65,7 @@ public:
     void OnFlip();
     void DrawHelloD3D11Triangle();
 private:
+    Timer gfxTimer;
 #ifndef NDEBUG
     DxgiInfoManager infoManager;
 #endif // !NDEBUG
