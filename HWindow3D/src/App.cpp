@@ -26,6 +26,9 @@ void App::OnFrame()
 	const float c = sin(timer.Peek()) / 2.0f + 0.5f;
 	wnd.Gfx().SetClearColor(c, 1.0f, c);
 
+	// Draw the test triangle
+	wnd.Gfx().DrawHelloD3D11Triangle();
+
 	// SwapBuffers
 	wnd.Gfx().OnFlip();
 }
