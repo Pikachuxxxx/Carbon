@@ -3,6 +3,8 @@
 #include "Win.h"
 #include <vector>
 #include <string>
+#include <dxgidebug.h>
+#include <wrl.h>
 
 class DxgiInfoManager
 {
@@ -14,6 +16,6 @@ public:
 	NONCOPYABLE(DxgiInfoManager)
 private:
 	unsigned long long next = 0;
-	struct IDXGIInfoQueue* pDxgiInfoQueue = nullptr;
+	Microsoft::WRL::ComPtr<IDXGIInfoQueue> pDxgiInfoQueue;
 };
 

@@ -16,6 +16,6 @@ private:
 	int m_Line;
 	std::string m_File;
 protected:
-	mutable std::string whatBufffer;
+	mutable std::string whatBuffer;
 };
 

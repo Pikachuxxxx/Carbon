@@ -10,8 +10,8 @@ const char* CarbonException::what() const noexcept
 	std::ostringstream oss;
 	oss << GetType() << std::endl
 		<< GetOriginString();
-	whatBufffer = oss.str();
-	return whatBufffer.c_str();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
 }
 
 const char* CarbonException::GetType() const noexcept

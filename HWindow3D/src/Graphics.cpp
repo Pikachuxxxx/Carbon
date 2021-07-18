@@ -1,18 +1,8 @@
 #include "Graphics.h"
 
-#include "dxerr.h"
 #include <sstream>
 
 #pragma comment(lib, "d3d11.lib")
-
-#define CBN_GFX_THROW_FAILED(hrcall) if( FAILED( hr = (hrcall) ) ) throw Graphics::HRException( __LINE__,__FILE__,hr )
-
-
-#define CBN_EXCEPT_NOINFO(hr) Graphics::HRException(__LINE__, __FILE__, hr)
-#define CBN_GFX_THROW_NOINFO(hrcall) if( FAILED( hr = (hrcall) ) ) throw Graphics::HRException( __LINE__,__FILE__,hr )
-
-#define CBN_GFX_EXCEPT(hr) if( FAILED( hr = (hrcall) ) ) throw Graphics::HRException( __LINE__,__FILE__,hr )
-#define CBN_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException(__LINE__, __FILE__, (hr))
 
 Graphics::Graphics(HWND hwnd)
 {
@@ -37,7 +27,7 @@ Graphics::Graphics(HWND hwnd)
 	HRESULT hr;
 
 	// Create the device and swapchain
-	CBN_GFX_THROW_FAILED(D3D11CreateDeviceAndSwapChain(
+	CBN_GFX_THROW_INFO(D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
@@ -53,14 +43,14 @@ Graphics::Graphics(HWND hwnd)
 	));
 	// Get the back buffer and render target
 	Microsoft::WRL::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
-	CBN_GFX_THROW_FAILED(pSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer));
-	CBN_GFX_THROW_FAILED(pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pTarget));
+	CBN_GFX_THROW_INFO(pSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer));
+	CBN_GFX_THROW_INFO(pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pTarget));
 }
 
 void Graphics::SetClearColor(float r, float g, float b)
 {
 	const float  color[] = {r, g, b, 1.0f};
-	pContext->ClearRenderTargetView(pTarget.Get(), color);
+	CBN_GFX_THROW_INFO_ONLY(pContext->ClearRenderTargetView(pTarget.Get(), color));
 }
 
 void Graphics::OnFlip()
@@ -70,10 +60,10 @@ void Graphics::OnFlip()
 	{
 		if (hr == DXGI_ERROR_DEVICE_REMOVED)
 		{
-			throw CBN_DEVICE_REMOVED_EXCEPT(pDevice->GetDeviceRemovedReason());
+			throw CBN_GFX_DEVICE_REMOVED_EXCEPT(pDevice->GetDeviceRemovedReason());
 		}
 		else
-			CBN_GFX_THROW_FAILED(hr);
+			CBN_GFX_THROW_INFO(hr);
 	}
 }
 
@@ -86,6 +76,11 @@ Graphics::HRException::HRException(int line, const char* file, HRESULT hr, std::
 		info += m;
 		info.push_back('\n');
 	}
+	// remove final newline if exists
+	if (!info.empty())
+	{
+		info.pop_back();
+	}
 }
 
 const char* Graphics::HRException::what() const noexcept
@@ -95,10 +90,14 @@ const char* Graphics::HRException::what() const noexcept
 		<< "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
 		<< std::dec << " (" << (unsigned long)GetErrorCode() << ")" << std::endl
 		<< "[Error String] " << GetErrorString() << std::endl
-		<< "[Description] " << GetErrorStringDescription() << std::endl
-		<< GetOriginString();
-	whatBufffer = oss.str();
-	return whatBufffer.c_str();
+		<< "[Description] " << GetErrorStringDescription() << std::endl;
+	if (!info.empty())
+	{
+		oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+	}
+	oss	<< GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
 }
 
 const char* Graphics::HRException::GetType() const noexcept
@@ -131,4 +130,40 @@ const char* Graphics::DeviceRemovedException::GetType() const noexcept
 const char* Graphics::NoGfxException::GetType() const noexcept
 {
 	return "Graphics Exception! No Context";
+}
+
+Graphics::InfoException::InfoException(int line, const char* file, std::vector<std::string> infoMsgs) noexcept
+	: Exception(line, file)
+{
+	// join all info messages with newlines into single string
+	for (const auto& m : infoMsgs)
+	{
+		info += m;
+		info.push_back('\n');
+	}
+	// remove final newline if exists
+	if (!info.empty())
+	{
+		info.pop_back();
+	}
+}
+
+const char* Graphics::InfoException::what() const noexcept
+{
+	std::ostringstream oss;
+	oss << GetType() << std::endl
+		<< "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+	oss << GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char* Graphics::InfoException::GetType() const noexcept
+{
+	return "Carbon Graphics Info Exception";
+}
+
+std::string Graphics::InfoException::GetErrorInfo() const noexcept
+{
+	return info;
 }

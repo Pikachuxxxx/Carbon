@@ -231,8 +231,8 @@ const char* WindowsWindow::WindowsWindowException::what() const noexcept
         << "[Error Code] " << GetErrorCode() << std::endl
         << "[Description] " << GetErrorString() << std::endl
         << GetOriginString();
-    whatBufffer = oss.str();
-    return whatBufffer.c_str();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
 }
 
 const char* WindowsWindow::WindowsWindowException::GetType() const noexcept

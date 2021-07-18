@@ -21,6 +21,7 @@ public:
 	// TODO: Store the return code and return it at the end of the program
 	class WindowsWindowException : public CarbonException
 	{
+		using CarbonException::CarbonException;
 	public:
 		WindowsWindowException(int line, const char* file, HRESULT hr) noexcept;
 		const char* what() const noexcept override;
@@ -57,7 +58,7 @@ public:
 	inline Graphics& Gfx() {
 		if (!gfx)
 		{
-			throw CBN_NO_GFX_EXCEPT();
+			throw CBN_CHWND_NOGFX_EXCEPT();
 		}
 		return *gfx;
 	}
