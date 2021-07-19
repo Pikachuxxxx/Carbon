@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
@@ -72,44 +73,93 @@ void Graphics::OnFlip()
 void Graphics::DrawHelloD3D11Triangle()
 {
     HRESULT hr;
-    struct Vertex { float x, y, r, g, b, t; };
+    struct Vertex { float x, y, z, r, g, b, t; };
     float t = sin(gfxTimer.Peek());
-    const Vertex vertices[] = {
-        {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, t},
-        { -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, t},
-        { 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, t},
-        { 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, t},
+	const Vertex trivertices[] = {
+		{-0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, t},
+		{ -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, t},
+		{ 0.5f, 0.5f,   0.0f, 1.0f, 1.0f, 0.0f, t},
+		{ 0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, t},
 
-    };
-    unsigned short indices[] = {
+	};
+
+	const Vertex cubevertices[] = {
+		{  -0.5f, -0.5f, -0.5f,    0.5f, 0.0f, 0.0f, t},
+		{  0.5f, -0.5f, -0.5f,    0.0f, 0.5f, 0.0f, t},
+		{  -0.5f, 0.5f, -0.5f,    0.0f, 0.0f, 0.5f, t},
+		{  0.5f, 0.5f, -0.5f,    0.5f, 0.5f, 0.5f, t},
+
+		{  -0.5f, -0.5f, 0.5f,    0.0f, 0.5f, 0.5f, t},
+		{  0.5f, -0.5f, 0.5f,    0.5f, 0.0f, 0.5f, t},
+		{  -0.5f, 0.5f, 0.5f,    0.0f, 0.0f, 0.0f, t},
+		{  0.5f, 0.5f, 0.5f,    0.5f, 0.5f, 0.5f, t},
+
+	};
+
+    unsigned short triindices[] = {
         0, 1, 2, 2, 3, 0
+    };
+
+	unsigned short cubeindices[] = {
+		0, 2, 1,    2, 3, 1,
+		1, 3, 5,    3, 7, 5,
+		2, 6, 3,    3, 6, 7,
+		4, 5, 7,    4, 7, 6,
+		0, 4, 2,    2, 4, 6,
+		0, 1, 4,    1, 5, 4
+	};
+
+    struct ConstantBuffer 
+    {
+        DirectX::XMMATRIX transform;
+    };
+
+    const ConstantBuffer cbuf =
+    {
+        DirectX::XMMatrixTranspose(
+          DirectX::XMMatrixRotationX(t) * DirectX::XMMatrixRotationY(t) * DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 4.0f) *
+            DirectX::XMMatrixPerspectiveFovLH(1.0f, 4.0f / 3.0f, 0.01f, 10.0f))
     };
 
     // Create the vertex buffer
     Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
     D3D11_BUFFER_DESC bufferDesc{};
-    bufferDesc.ByteWidth = sizeof(vertices);
+    bufferDesc.ByteWidth = sizeof(cubevertices);
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = 0u;
     bufferDesc.MiscFlags = 0u;
     bufferDesc.StructureByteStride = sizeof(Vertex);
     D3D11_SUBRESOURCE_DATA subres{};
-    subres.pSysMem = vertices;
+    subres.pSysMem = cubevertices;
     CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&bufferDesc, &subres, &pVertexBuffer));
 
     // Create the index buffer
     Microsoft::WRL::ComPtr<ID3D11Buffer> pindexBuffer;
     D3D11_BUFFER_DESC idxbufferDesc{};
-    idxbufferDesc.ByteWidth = sizeof(indices);
+    idxbufferDesc.ByteWidth = sizeof(cubeindices);
     idxbufferDesc.Usage = D3D11_USAGE_DEFAULT;
     idxbufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     idxbufferDesc.CPUAccessFlags = 0u;
     idxbufferDesc.MiscFlags = 0u;
     idxbufferDesc.StructureByteStride = sizeof(unsigned short);
     D3D11_SUBRESOURCE_DATA idxsubres{};
-    idxsubres.pSysMem = indices;
+    idxsubres.pSysMem = cubeindices;
     CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&idxbufferDesc, &idxsubres, &pindexBuffer));
+
+    // Constant buffer
+	 // Create the index buffer
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+	D3D11_BUFFER_DESC consbufferDesc{};
+	consbufferDesc.ByteWidth = sizeof(cbuf);
+	consbufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	consbufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	consbufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	consbufferDesc.MiscFlags = 0u;
+	consbufferDesc.StructureByteStride = sizeof(ConstantBuffer);
+	D3D11_SUBRESOURCE_DATA conssubres{};
+    conssubres.pSysMem = &cbuf;
+	CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&consbufferDesc, &conssubres, &pConstantBuffer));
 
     // Bind the vertex buffer to the input assembler
     // It makes no sense to describe how the buffer data is offset and stride is again, can it not take from the buffer description?
@@ -117,6 +167,7 @@ void Graphics::DrawHelloD3D11Triangle()
     const UINT offset = 0u;
     CBN_GFX_THROW_INFO_ONLY(pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset));
     CBN_GFX_THROW_INFO_ONLY(pContext->IASetIndexBuffer(pindexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u));
+    CBN_GFX_THROW_INFO_ONLY(pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf()));
 
     // Primitive topology
     pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -140,9 +191,9 @@ void Graphics::DrawHelloD3D11Triangle()
     Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
     const D3D11_INPUT_ELEMENT_DESC ied[] =
     {
-        {"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        {"Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // 2 floats for position = 8bytes
-        {"Time", 0, DXGI_FORMAT_R32_FLOAT, 0, 20u, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"Time", 0, DXGI_FORMAT_R32_FLOAT, 0, 24u, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 
     };
     CBN_GFX_THROW_INFO(pDevice->CreateInputLayout(ied, (UINT)std::size(ied), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout));
@@ -155,15 +206,14 @@ void Graphics::DrawHelloD3D11Triangle()
     viewport.Height = 600;
     viewport.MaxDepth = 1;
     viewport.MinDepth = 0;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
     pContext->RSSetViewports(1, &viewport);
 
     // Bind the render target
     pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
 
-    //CBN_GFX_THROW_INFO_ONLY(pContext->Draw((UINT)std::size(vertices), 0u));
-    CBN_GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u));
+    CBN_GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(cubeindices), 0u, 0u));
 }
 
 Graphics::HRException::HRException(int line, const char* file, HRESULT hr, std::vector<std::string> infoMsgs) noexcept
