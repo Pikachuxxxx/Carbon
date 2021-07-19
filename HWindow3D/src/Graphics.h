@@ -63,7 +63,7 @@ public:
     NONCOPYABLE(Graphics)
     void SetClearColor(float r, float g, float b);
     void OnFlip();
-    void DrawHelloD3D11Triangle();
+    void DrawHelloD3D11Triangle(float x = 0.0f, float y = 0.0f);
 private:
     Timer gfxTimer;
 #ifndef NDEBUG
@@ -73,5 +73,6 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapchain = nullptr;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext = nullptr;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTarget = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSView = nullptr;
 };
 

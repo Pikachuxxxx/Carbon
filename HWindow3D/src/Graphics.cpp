@@ -48,12 +48,50 @@ Graphics::Graphics(HWND hwnd)
     Microsoft::WRL::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
     CBN_GFX_THROW_INFO(pSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer));
     CBN_GFX_THROW_INFO(pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pTarget));
+    
+    // Bind the depth/stencil buffer
+    D3D11_DEPTH_STENCIL_DESC dsdesc{};
+    dsdesc.DepthEnable = true;
+    dsdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsdesc.DepthFunc = D3D11_COMPARISON_LESS;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> pDSState;
+    CBN_GFX_THROW_INFO(pDevice->CreateDepthStencilState(&dsdesc, &pDSState));
+
+    // Bind the depth stencil buffer
+    pContext->OMSetDepthStencilState(pDSState.Get(), 1u);
+
+    // Now create the depth stencil texture
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
+    D3D11_TEXTURE2D_DESC txDesc{};
+    txDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    txDesc.Width = 800u;
+    txDesc.Height = 600u;
+    txDesc.ArraySize = 1u;
+    txDesc.MipLevels = 1u;
+    txDesc.SampleDesc.Count = 1u;
+    txDesc.SampleDesc.Quality = 0u;
+    txDesc.Usage = D3D11_USAGE_DEFAULT;
+    txDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    CBN_GFX_THROW_INFO(pDevice->CreateTexture2D(&txDesc, nullptr, &pDepthStencil));
+
+    // View description
+    D3D11_DEPTH_STENCIL_VIEW_DESC descDSV{};
+    descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+    descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    descDSV.Texture2D.MipSlice = 0u;
+
+    CBN_GFX_THROW_INFO(pDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, &pDSView));
+
+    // Bind the depth stencil view to OM
+    pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSView.Get());
 }
 
 void Graphics::SetClearColor(float r, float g, float b)
 {
     const float  color[] = {r, g, b, 1.0f};
     CBN_GFX_THROW_INFO_ONLY(pContext->ClearRenderTargetView(pTarget.Get(), color));
+    CBN_GFX_THROW_INFO_ONLY(pContext->ClearDepthStencilView(pDSView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u));
 }
 
 void Graphics::OnFlip()
@@ -70,44 +108,44 @@ void Graphics::OnFlip()
     }
 }
 
-void Graphics::DrawHelloD3D11Triangle()
+void Graphics::DrawHelloD3D11Triangle(float x, float y)
 {
     HRESULT hr;
     struct Vertex { float x, y, z, r, g, b, t; };
     float t = sin(gfxTimer.Peek());
-	const Vertex trivertices[] = {
-		{-0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, t},
-		{ -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, t},
-		{ 0.5f, 0.5f,   0.0f, 1.0f, 1.0f, 0.0f, t},
-		{ 0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, t},
+    const Vertex trivertices[] = {
+        {-0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, t},
+        { -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, t},
+        { 0.5f, 0.5f,   0.0f, 1.0f, 1.0f, 0.0f, t},
+        { 0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, t},
 
-	};
+    };
 
-	const Vertex cubevertices[] = {
-		{  -0.5f, -0.5f, -0.5f,    0.5f, 0.0f, 0.0f, t},
-		{  0.5f, -0.5f, -0.5f,    0.0f, 0.5f, 0.0f, t},
-		{  -0.5f, 0.5f, -0.5f,    0.0f, 0.0f, 0.5f, t},
-		{  0.5f, 0.5f, -0.5f,    0.5f, 0.5f, 0.5f, t},
+    const Vertex cubevertices[] = {
+        {  -0.5f, -0.5f, -0.5f,    0.5f, 0.0f, 0.0f, t},
+        {  0.5f, -0.5f, -0.5f,    0.0f, 0.5f, 0.0f, t},
+        {  -0.5f, 0.5f, -0.5f,    0.0f, 0.0f, 0.5f, t},
+        {  0.5f, 0.5f, -0.5f,    0.5f, 0.5f, 0.5f, t},
 
-		{  -0.5f, -0.5f, 0.5f,    0.0f, 0.5f, 0.5f, t},
-		{  0.5f, -0.5f, 0.5f,    0.5f, 0.0f, 0.5f, t},
-		{  -0.5f, 0.5f, 0.5f,    0.0f, 0.0f, 0.0f, t},
-		{  0.5f, 0.5f, 0.5f,    0.5f, 0.5f, 0.5f, t},
+        {  -0.5f, -0.5f, 0.5f,    0.0f, 0.5f, 0.5f, t},
+        {  0.5f, -0.5f, 0.5f,    0.5f, 0.0f, 0.5f, t},
+        {  -0.5f, 0.5f, 0.5f,    0.0f, 0.0f, 0.0f, t},
+        {  0.5f, 0.5f, 0.5f,    0.5f, 0.5f, 0.5f, t},
 
-	};
+    };
 
     unsigned short triindices[] = {
         0, 1, 2, 2, 3, 0
     };
 
-	unsigned short cubeindices[] = {
-		0, 2, 1,    2, 3, 1,
-		1, 3, 5,    3, 7, 5,
-		2, 6, 3,    3, 6, 7,
-		4, 5, 7,    4, 7, 6,
-		0, 4, 2,    2, 4, 6,
-		0, 1, 4,    1, 5, 4
-	};
+    unsigned short cubeindices[] = {
+        0, 2, 1,    2, 3, 1,
+        1, 3, 5,    3, 7, 5,
+        2, 6, 3,    3, 6, 7,
+        4, 5, 7,    4, 7, 6,
+        0, 4, 2,    2, 4, 6,
+        0, 1, 4,    1, 5, 4
+    };
 
     struct ConstantBuffer 
     {
@@ -117,7 +155,7 @@ void Graphics::DrawHelloD3D11Triangle()
     const ConstantBuffer cbuf =
     {
         DirectX::XMMatrixTranspose(
-          DirectX::XMMatrixRotationX(t) * DirectX::XMMatrixRotationY(t) * DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 4.0f) *
+          DirectX::XMMatrixRotationX(t) * DirectX::XMMatrixRotationY(t) * DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f) * DirectX::XMMatrixTranslation(x, y, 4.0f) *
             DirectX::XMMatrixPerspectiveFovLH(1.0f, 4.0f / 3.0f, 0.01f, 10.0f))
     };
 
@@ -148,18 +186,18 @@ void Graphics::DrawHelloD3D11Triangle()
     CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&idxbufferDesc, &idxsubres, &pindexBuffer));
 
     // Constant buffer
-	 // Create the index buffer
-	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
-	D3D11_BUFFER_DESC consbufferDesc{};
-	consbufferDesc.ByteWidth = sizeof(cbuf);
-	consbufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	consbufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	consbufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	consbufferDesc.MiscFlags = 0u;
-	consbufferDesc.StructureByteStride = sizeof(ConstantBuffer);
-	D3D11_SUBRESOURCE_DATA conssubres{};
+     // Create the index buffer
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+    D3D11_BUFFER_DESC consbufferDesc{};
+    consbufferDesc.ByteWidth = sizeof(cbuf);
+    consbufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    consbufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    consbufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    consbufferDesc.MiscFlags = 0u;
+    consbufferDesc.StructureByteStride = sizeof(ConstantBuffer);
+    D3D11_SUBRESOURCE_DATA conssubres{};
     conssubres.pSysMem = &cbuf;
-	CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&consbufferDesc, &conssubres, &pConstantBuffer));
+    CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&consbufferDesc, &conssubres, &pConstantBuffer));
 
     // Bind the vertex buffer to the input assembler
     // It makes no sense to describe how the buffer data is offset and stride is again, can it not take from the buffer description?
@@ -206,12 +244,9 @@ void Graphics::DrawHelloD3D11Triangle()
     viewport.Height = 600;
     viewport.MaxDepth = 1;
     viewport.MinDepth = 0;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
     pContext->RSSetViewports(1, &viewport);
-
-    // Bind the render target
-    pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
 
     CBN_GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(cubeindices), 0u, 0u));
 }
