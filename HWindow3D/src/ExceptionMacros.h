@@ -18,3 +18,9 @@
 #define CBN_CHWND_EXCEPT( hr ) WindowsWindow::WindowsWindowException( __LINE__,__FILE__,(hr) )
 #define CBN_CHWND_LAST_EXCEPT() WindowsWindow::WindowsWindowException( __LINE__,__FILE__,GetLastError() )
 #define CBN_CHWND_NOGFX_EXCEPT() Graphics::NoGfxException( __LINE__,__FILE__ )
+
+#ifdef NDEBUG
+#define INFOMAN(gfx) HRESULT hr
+#else
+#define INFOMAN(gfx) HRESULT hr;  DxgiInfoManager& infoManager = GetInfoManager((gfx))
+#endif

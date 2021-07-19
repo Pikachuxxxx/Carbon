@@ -92,6 +92,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -110,6 +111,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,6 +130,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +149,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,6 +159,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\bindable\Bindable.cpp" />
+    <ClCompile Include="src\bindable\IndexBuffer.cpp" />
+    <ClCompile Include="src\bindable\VertexBuffer.cpp" />
+    <ClCompile Include="src\drawable\Box.cpp" />
+    <ClCompile Include="src\drawable\Drawable.cpp" />
     <ClCompile Include="src\DxgiInfoManager.cpp" />
     <ClCompile Include="src\dxerr.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
@@ -168,6 +177,16 @@
     <ClCompile Include="src\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\bindable\Bindable.h" />
+    <ClInclude Include="src\bindable\ConstantBuffers.h" />
+    <ClInclude Include="src\bindable\IndexBuffer.h" />
+    <ClInclude Include="src\bindable\InpuLayout.h" />
+    <ClInclude Include="src\bindable\PixelShader.h" />
+    <ClInclude Include="src\bindable\Topology.h" />
+    <ClInclude Include="src\bindable\VertexBuffer.h" />
+    <ClInclude Include="src\bindable\VertexShader.h" />
+    <ClInclude Include="src\drawable\Box.h" />
+    <ClInclude Include="src\drawable\Drawable.h" />
     <ClInclude Include="src\DxgiInfoManager.h" />
     <ClInclude Include="src\dxerr.h" />
     <ClInclude Include="src\ExceptionMacros.h" />

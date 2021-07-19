@@ -133,6 +133,7 @@ void Graphics::DrawHelloD3D11Triangle(float x, float y)
         {  0.5f, 0.5f, 0.5f,    0.5f, 0.5f, 0.5f, t},
 
     };
+    t = gfxTimer.Peek();
 
     unsigned short triindices[] = {
         0, 1, 2, 2, 3, 0
@@ -162,31 +163,31 @@ void Graphics::DrawHelloD3D11Triangle(float x, float y)
     // Create the vertex buffer
     Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
     D3D11_BUFFER_DESC bufferDesc{};
-    bufferDesc.ByteWidth = sizeof(cubevertices);
+    bufferDesc.ByteWidth = sizeof(trivertices);
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = 0u;
     bufferDesc.MiscFlags = 0u;
     bufferDesc.StructureByteStride = sizeof(Vertex);
     D3D11_SUBRESOURCE_DATA subres{};
-    subres.pSysMem = cubevertices;
+    subres.pSysMem = trivertices;
     CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&bufferDesc, &subres, &pVertexBuffer));
 
     // Create the index buffer
-    Microsoft::WRL::ComPtr<ID3D11Buffer> pindexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
     D3D11_BUFFER_DESC idxbufferDesc{};
-    idxbufferDesc.ByteWidth = sizeof(cubeindices);
+    idxbufferDesc.ByteWidth = sizeof(triindices);
     idxbufferDesc.Usage = D3D11_USAGE_DEFAULT;
     idxbufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     idxbufferDesc.CPUAccessFlags = 0u;
     idxbufferDesc.MiscFlags = 0u;
     idxbufferDesc.StructureByteStride = sizeof(unsigned short);
     D3D11_SUBRESOURCE_DATA idxsubres{};
-    idxsubres.pSysMem = cubeindices;
-    CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&idxbufferDesc, &idxsubres, &pindexBuffer));
+    idxsubres.pSysMem = triindices;
+    CBN_GFX_THROW_INFO(pDevice->CreateBuffer(&idxbufferDesc, &idxsubres, &pIndexBuffer));
 
     // Constant buffer
-     // Create the index buffer
+    // Create the index buffer
     Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
     D3D11_BUFFER_DESC consbufferDesc{};
     consbufferDesc.ByteWidth = sizeof(cbuf);
@@ -204,7 +205,7 @@ void Graphics::DrawHelloD3D11Triangle(float x, float y)
     const UINT stride = sizeof(Vertex);
     const UINT offset = 0u;
     CBN_GFX_THROW_INFO_ONLY(pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset));
-    CBN_GFX_THROW_INFO_ONLY(pContext->IASetIndexBuffer(pindexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u));
+    CBN_GFX_THROW_INFO_ONLY(pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u));
     CBN_GFX_THROW_INFO_ONLY(pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf()));
 
     // Primitive topology
@@ -248,7 +249,12 @@ void Graphics::DrawHelloD3D11Triangle(float x, float y)
     viewport.TopLeftY = 0;
     pContext->RSSetViewports(1, &viewport);
 
-    CBN_GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(cubeindices), 0u, 0u));
+    CBN_GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(triindices), 0u, 0u));
+}
+
+void Graphics::DrawIndexed(UINT count)
+{
+    CBN_GFX_THROW_INFO_ONLY(pContext->DrawIndexed(count, 0u, 0u));
 }
 
 Graphics::HRException::HRException(int line, const char* file, HRESULT hr, std::vector<std::string> infoMsgs) noexcept

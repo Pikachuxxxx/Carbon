@@ -9,7 +9,6 @@
 #include "DxgiInfoManager.h"
 #include "Timer.h"
 
-
 #include "ExceptionMacros.h"
 
 class Graphics
@@ -64,14 +63,16 @@ public:
     void SetClearColor(float r, float g, float b);
     void OnFlip();
     void DrawHelloD3D11Triangle(float x = 0.0f, float y = 0.0f);
+    void DrawIndexed(UINT count);
+    friend class Bindable;
 private:
     Timer gfxTimer;
 #ifndef NDEBUG
     DxgiInfoManager infoManager;
 #endif // !NDEBUG
     Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapchain = nullptr;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext = nullptr;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapchain = nullptr;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTarget = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSView = nullptr;
 };
