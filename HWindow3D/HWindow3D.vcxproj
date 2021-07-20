@@ -190,6 +190,7 @@
     <ClInclude Include="src\bindable\Viewport.h" />
     <ClInclude Include="src\drawable\Box.h" />
     <ClInclude Include="src\drawable\Drawable.h" />
+    <ClInclude Include="src\drawable\DrawableBase.h" />
     <ClInclude Include="src\DxgiInfoManager.h" />
     <ClInclude Include="src\dxerr.h" />
     <ClInclude Include="src\ExceptionMacros.h" />

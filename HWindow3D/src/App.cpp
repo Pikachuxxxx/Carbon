@@ -4,6 +4,8 @@
 #include <memory>
 #include <random>
 
+#include "drawable/DrawableBase.h"
+
 App::App(const std::string& appName, int width, int height, int x, int y)
     : wnd(appName.c_str(), width, height, x, y)
 {
@@ -17,7 +19,7 @@ App::App(const std::string& appName, int width, int height, int x, int y)
     {
         boxes.push_back(std::make_unique<Box>(wnd.Gfx(), rng, adist, ddist, odist, rdist));
     }
-    wnd.Gfx().SetProjection(DirectX::XMMatrixPerspectiveFovLH(1.0f, 4.0f / 3.0f, 0.01f, 100.0f));
+    wnd.Gfx().SetProjection(DirectX::XMMatrixPerspectiveFovLH(1.0f, width / height, 0.01f, 100.0f));
 }
 
 int App::Run()

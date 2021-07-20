@@ -1,9 +1,9 @@
 #pragma once
-#include "Drawable.h"
+#include "DrawableBase.h"
 
 #include <random>
 
-class Box : public Drawable
+class Box : public DrawableBase<Box>
 {
 public:
 	Box(Graphics& gfx, std::mt19937& rng,
@@ -18,5 +18,6 @@ private:
 	float yaw = 0.0f, pitch = 0.0f, roll = 0.0f;
 	float theta, phi, chi;
 	float droll, dpitch, dyaw, dtheta, dphi, dchi;
+
 };
 
