@@ -4,13 +4,14 @@
 
 class Topology : public Bindable
 {
+public:
 	Topology(Graphics& gfx, D3D_PRIMITIVE_TOPOLOGY topology)
 		: topology(topology)
 	{}
-public:
 	void Bind(Graphics& gfx) override
 	{
-		GetContext(gfx)->IASetPrimitiveTopology(topology);
+		INFOMAN(gfx);
+		CBN_GFX_THROW_INFO_ONLY(GetContext(gfx)->IASetPrimitiveTopology(topology));
 	}
 private:
 	D3D_PRIMITIVE_TOPOLOGY topology;

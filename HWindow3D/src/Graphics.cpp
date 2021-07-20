@@ -83,6 +83,16 @@ Graphics::Graphics(HWND hwnd)
 
     CBN_GFX_THROW_INFO(pDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, &pDSView));
 
+	// Configure the viewport
+	D3D11_VIEWPORT viewport;
+	viewport.Width = 800;
+	viewport.Height = 600;
+	viewport.MaxDepth = 1;
+	viewport.MinDepth = 0;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	pContext->RSSetViewports(1, &viewport);
+
     // Bind the depth stencil view to OM
     pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSView.Get());
 }

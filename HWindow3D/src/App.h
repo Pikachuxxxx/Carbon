@@ -3,6 +3,7 @@
 #include "Win.h"
 #include "WindowsWindow.h"
 #include "Timer.h"
+#include "drawable/Box.h"
 
 class App
 {
@@ -14,6 +15,6 @@ private:
 private:
 	WindowsWindow wnd;
 	Timer timer;
-		
+	std::vector<std::unique_ptr<class Box>> boxes;
 };
 

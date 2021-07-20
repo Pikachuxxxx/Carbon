@@ -8,6 +8,7 @@
 #include "utils/CarbonException.h"
 #include "DxgiInfoManager.h"
 #include "Timer.h"
+#include <DirectXMath.h>
 
 #include "ExceptionMacros.h"
 
@@ -65,6 +66,9 @@ public:
     void DrawHelloD3D11Triangle(float x = 0.0f, float y = 0.0f);
     void DrawIndexed(UINT count);
     friend class Bindable;
+
+    DirectX::XMMATRIX& GetProjection() { return m_PerspectiveMatrix; }
+    void SetProjection(const DirectX::XMMATRIX& projection) { m_PerspectiveMatrix = projection; }
 private:
     Timer gfxTimer;
 #ifndef NDEBUG
@@ -75,5 +79,6 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapchain = nullptr;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTarget = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSView = nullptr;
+    DirectX::XMMATRIX m_PerspectiveMatrix;
 };
 

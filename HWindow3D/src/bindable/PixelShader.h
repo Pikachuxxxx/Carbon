@@ -1,11 +1,11 @@
 #pragma once
-#pragma once
 
 #include "Bindable.h"
 
 class PixelShader : public Bindable
 {
-	PixelShader(Graphics& gfx, wchar_t* path)
+public:
+	PixelShader(Graphics& gfx, LPCWSTR path)
 	{
 		INFOMAN(gfx);
 
@@ -13,11 +13,10 @@ class PixelShader : public Bindable
 		CBN_GFX_THROW_INFO(GetDevice(gfx)->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
 	}
 
-public:
 	void Bind(Graphics& gfx) override
 	{
 		INFOMAN(gfx);
-		GetContext(gfx)->PSSetShader(pPixelShader.Get(), nullptr, 0u);
+		CBN_GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShader(pPixelShader.Get(), nullptr, 0u));
 	}
 private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;

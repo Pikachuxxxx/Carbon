@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="src\bindable\Bindable.cpp" />
     <ClCompile Include="src\bindable\IndexBuffer.cpp" />
+    <ClCompile Include="src\bindable\TransformCBuffer.cpp" />
     <ClCompile Include="src\bindable\VertexBuffer.cpp" />
     <ClCompile Include="src\drawable\Box.cpp" />
     <ClCompile Include="src\drawable\Drawable.cpp" />
@@ -183,8 +184,10 @@
     <ClInclude Include="src\bindable\InpuLayout.h" />
     <ClInclude Include="src\bindable\PixelShader.h" />
     <ClInclude Include="src\bindable\Topology.h" />
+    <ClInclude Include="src\bindable\TransformCBuffer.h" />
     <ClInclude Include="src\bindable\VertexBuffer.h" />
     <ClInclude Include="src\bindable\VertexShader.h" />
+    <ClInclude Include="src\bindable\Viewport.h" />
     <ClInclude Include="src\drawable\Box.h" />
     <ClInclude Include="src\drawable\Drawable.h" />
     <ClInclude Include="src\DxgiInfoManager.h" />

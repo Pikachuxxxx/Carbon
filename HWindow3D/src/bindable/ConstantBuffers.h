@@ -6,7 +6,7 @@ template <typename C>
 class ConstantBuffer : public Bindable
 {
 public:
-	Update(Graphics& gfx, const C& consts)
+	void Update(Graphics& gfx, const C& consts)
 	{
 		INFOMAN(gfx);
 
@@ -59,7 +59,7 @@ public:
 	using ConstantBuffer<C>::ConstantBuffer;
 	void Bind(Graphics& gfx) override 
 	{
-		CBN_GFX_THROW_INFO_ONLY(GetContext(gfx)->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf()));
+		GetContext(gfx)->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
 	}
 };
 
@@ -72,6 +72,6 @@ public:
 	using ConstantBuffer<C>::ConstantBuffer;
 	void Bind(Graphics& gfx) override
 	{
-		CBN_GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf()));
+		GetContext(gfx)->PSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
 	}
 };

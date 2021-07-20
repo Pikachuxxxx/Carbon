@@ -5,13 +5,15 @@
 class InputLayout : public Bindable
 {
 public:
-	InputLayout(Graphics& gfx, const std::vector<D3D11_INPUT_ELEMENT_DESC> ieds)
+	InputLayout(Graphics& gfx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& ieds, ID3DBlob* pBlob)
 	{
-		//CBN_GFX_THROW_INFO(GetDevice(gfx)->CreateInputLayout(ieds.data(), (UINT)(sizeof(D3D11_INPUT_ELEMENT_DESC) * ieds.size()), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout));
+		INFOMAN(gfx);
+		CBN_GFX_THROW_INFO(GetDevice(gfx)->CreateInputLayout(ieds.data(), (UINT)(ieds.size()), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout));
 	}
 
 	void Bind(Graphics& gfx) override
 	{
+		INFOMAN(gfx);
 		CBN_GFX_THROW_INFO_ONLY(GetContext(gfx)->IASetInputLayout(pInputLayout.Get()));
 	}
 private:

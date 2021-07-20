@@ -17,6 +17,6 @@ private:
 	float r;
 	float yaw = 0.0f, pitch = 0.0f, roll = 0.0f;
 	float theta, phi, chi;
-	float droll, dpithc, dyaw, dtheta, dphi, dchi;
+	float droll, dpitch, dyaw, dtheta, dphi, dchi;
 };
 
